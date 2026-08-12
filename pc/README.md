@@ -11,4 +11,3 @@ on a PYNQ-Z2 board.
   bit-for-bit); used by `pc_notebook.ipynb` to verify hardware output against software
 - `pc_notebook.ipynb` — hardware validation notebook: runs every uploaded test sequence
   through the FPGA and checks its output against `pc_golden.py`, pixel-exact
-- `DEBUG_LOG.md` — notes from tracking down a boundary-column defect in the RTL, now fixed
