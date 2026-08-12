@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<Project Version="1" Minor="7" DIGEST="">
+	<TOOL_VERSION Version="2025.2"/>
+	<MODE Name="Post-Synthesis"/>
+	<SYSTEMINFO BOARD="" PART="xc7z020clg400-1" ARCH="zynq" PACKAGE="clg400" DEVICE="7z020" SPEED="-1"/>
+	<PART Name="xc7z020clg400-1">
+		<SSIT IS_SSIT="0"/>
+		<NUM_OF_SLRS Value="1"/>
+	</PART>
+	<HIERARCHY Name="pc_filter_bd_wrapper"/>
+	<File Type="HW_HANDOFF" Name="pc_filter_bd.hwh" src_db="pc_filter_bd.hwdef" DESIGN_HIERARCHY="pc_filter_bd_i" BD_TYPE="DEFAULT_BD">
+	</File>
+	<File Type="BDA" Name="pc_filter_bd.bda" src_db="pc_filter_bd.hwdef">
+	</File>
+	<File Type="PS_FSBL_INIT" Name="ps7_init.c" src_db="pc_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_FSBL_INIT" Name="ps7_init.h" src_db="pc_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_FSBL_INIT_GPL" Name="ps7_init_gpl.c" src_db="pc_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_FSBL_INIT_GPL" Name="ps7_init_gpl.h" src_db="pc_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_INIT_HELP" Name="ps7_init.html" src_db="pc_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_XMD_INIT" Name="ps7_init.tcl" src_db="pc_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="HW_HANDOFF" Name="pc_filter_bd_axi_smc_0.hwh" src_db="pc_filter_bd_axi_smc_0.hwdef" DESIGN_HIERARCHY="pc_filter_bd_axi_smc_0" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="BIT" Name="pc_filter_bd_wrapper.bit" src_db="temp.hdf">
+	</File>
+	<DRIVERS>
+		<DRIVER IP_VLNV="Psukirti:user:pc_filter:1.0">
+			<File PATH="drivers/pc_axi_v1_0/data/pc_axi.mdd"/>
+			<File PATH="drivers/pc_axi_v1_0/data/pc_axi.tcl"/>
+			<File PATH="drivers/pc_axi_v1_0/src/Makefile"/>
+			<File PATH="drivers/pc_axi_v1_0/src/pc_axi.h"/>
+			<File PATH="drivers/pc_axi_v1_0/src/pc_axi.c"/>
+			<File PATH="drivers/pc_axi_v1_0/src/pc_axi_selftest.c"/>
+		</DRIVER>
+	</DRIVERS>
+	<USEDRESOURCES/>
+	<DESIGN_DATA Type="rm">
+		<DESIGN_IDS DESIGN_ID="0" PARENT_ID="0" NODE_ID="0"/>
+	</DESIGN_DATA>
+</Project>
+

@@ -1,0 +1,22 @@
+# Vivado project-generated directories (regenerate from the .xpr + sources)
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.tmp/
+.Xil/
+
+# Vivado logs/journals
+vivado*.log
+vivado*.jou
+*.jou
+*.wdb
+*.pb
+webtalk*.log
+webtalk*.jou
+
+# OS junk
+Thumbs.db
+.DS_Store
