@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<Project Version="1" Minor="7" DIGEST="">
+	<TOOL_VERSION Version="2025.2"/>
+	<MODE Name="Post-Synthesis"/>
+	<SYSTEMINFO BOARD="" PART="xc7z020clg400-1" ARCH="zynq" PACKAGE="clg400" DEVICE="7z020" SPEED="-1" LUT="53200" FF="106400" BRAM="140" DSP="220"/>
+	<PART Name="xc7z020clg400-1">
+		<SSIT IS_SSIT="0"/>
+		<NUM_OF_SLRS Value="1"/>
+	</PART>
+	<HIERARCHY Name="rdo_filter_bd_wrapper"/>
+	<File Type="HW_HANDOFF" Name="rdo_filter_bd.hwh" src_db="rdo_filter_bd.hwdef" DESIGN_HIERARCHY="rdo_filter_bd_i" BD_TYPE="DEFAULT_BD">
+	</File>
+	<File Type="BDA" Name="rdo_filter_bd.bda" src_db="rdo_filter_bd.hwdef">
+	</File>
+	<File Type="HW_HANDOFF" Name="rdo_filter_bd_smartconnect_0_0.hwh" src_db="rdo_filter_bd_smartconnect_0_0.hwdef" DESIGN_HIERARCHY="rdo_filter_bd_i/smartconnect_0/inst" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="PS_FSBL_INIT" Name="ps7_init.c" src_db="rdo_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_FSBL_INIT" Name="ps7_init.h" src_db="rdo_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_FSBL_INIT_GPL" Name="ps7_init_gpl.c" src_db="rdo_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_FSBL_INIT_GPL" Name="ps7_init_gpl.h" src_db="rdo_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_INIT_HELP" Name="ps7_init.html" src_db="rdo_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="PS_XMD_INIT" Name="ps7_init.tcl" src_db="rdo_filter_bd_processing_system7_0_0.hwdef">
+	</File>
+	<File Type="HW_HANDOFF" Name="rdo_filter_bd_axi_smc_0.hwh" src_db="rdo_filter_bd_axi_smc_0.hwdef" DESIGN_HIERARCHY="rdo_filter_bd_i/axi_smc/inst" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="BIT" Name="rdo_filter_bd_wrapper.bit" src_db="temp.hdf">
+	</File>
+	<DRIVERS>
+		<DRIVER IP_VLNV="Psukirti:user:ns_filter:1.0">
+			<File PATH="drivers/ns_filter_v1_0/data/ns_filter.mdd"/>
+			<File PATH="drivers/ns_filter_v1_0/data/ns_filter.tcl"/>
+			<File PATH="drivers/ns_filter_v1_0/src/Makefile"/>
+			<File PATH="drivers/ns_filter_v1_0/src/ns_filter.h"/>
+			<File PATH="drivers/ns_filter_v1_0/src/ns_filter.c"/>
+			<File PATH="drivers/ns_filter_v1_0/src/ns_filter_selftest.c"/>
+		</DRIVER>
+		<DRIVER IP_VLNV="Psukirti:user:pc_filter:1.0">
+			<File PATH="drivers/pc_axi_v1_0/data/pc_axi.mdd"/>
+			<File PATH="drivers/pc_axi_v1_0/data/pc_axi.tcl"/>
+			<File PATH="drivers/pc_axi_v1_0/src/Makefile"/>
+			<File PATH="drivers/pc_axi_v1_0/src/pc_axi.h"/>
+			<File PATH="drivers/pc_axi_v1_0/src/pc_axi.c"/>
+			<File PATH="drivers/pc_axi_v1_0/src/pc_axi_selftest.c"/>
+		</DRIVER>
+		<DRIVER IP_VLNV="xilinx.com:user:rdo_filter_axi:1.0">
+			<File PATH="drivers/rdo_filter_axi_v1_0/data/rdo_filter_axi.mdd"/>
+			<File PATH="drivers/rdo_filter_axi_v1_0/data/rdo_filter_axi.tcl"/>
+			<File PATH="drivers/rdo_filter_axi_v1_0/src/Makefile"/>
+			<File PATH="drivers/rdo_filter_axi_v1_0/src/rdo_filter_axi.h"/>
+			<File PATH="drivers/rdo_filter_axi_v1_0/src/rdo_filter_axi.c"/>
+			<File PATH="drivers/rdo_filter_axi_v1_0/src/rdo_filter_axi_selftest.c"/>
+		</DRIVER>
+	</DRIVERS>
+	<USEDRESOURCES LUT="20845" FF="36923" BRAM="20" DSP="83"/>
+	<DESIGN_DATA Type="rm">
+		<DESIGN_IDS DESIGN_ID="1431956628" PARENT_ID="0" NODE_ID="0"/>
+	</DESIGN_DATA>
+</Project>
+

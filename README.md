@@ -1,12 +1,10 @@
 # AV2 Loop Restoration Filters — FPGA Implementation
 
-FPGA (Xilinx PYNQ-Z2) implementations of two AV2 in-loop restoration filters:
+FPGA (Xilinx PYNQ-Z2) implementations of three AV2 in-loop restoration components:
 
 - [`ns/`](ns/) — Non-Separable (NS) Wiener filter
 - [`pc/`](pc/) — Pixel Classification (PC) filter
-
-A third module, combining both via RDO (rate-distortion-optimized mode selection), is in
-progress and will be added as `rdo/` once ready.
+- [`rdo/`](rdo/) — RDO mode selection, choosing per-RU between NONE / PC / NS
 
 Each subdirectory is a self-contained Vivado project (`.xpr` + `.srcs`), plus Python scripts
 used to generate test vectors, Jupyter notebooks used to drive PYNQ hardware runs, and the
