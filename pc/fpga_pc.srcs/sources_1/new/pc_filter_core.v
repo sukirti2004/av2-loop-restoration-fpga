@@ -81,35 +81,42 @@ filter_lut u_flut (
 // Depth = feature_compute(4) + quantizer_ctx(1) + cluster_lut(1)
 //       + filter_lut(1) = 7 stages.
 //
-// IMPORTANT: this chain MUST be gated by valid_in.
+// IMPORTANT: this chain must NOT be gated by valid_in.
 //
-// Every stage in the taps path advances only when its valid is high
-// (feature_compute uses `if (valid_s1)`, filter_lut uses `if (valid_in)`,
-// etc.).  line_buffer's valid_out is NOT continuous — it is low for the
-// first 6 columns of every row and for the first 6 rows, because a full
-// 7x7 window does not exist there.
+// The taps path has a FIXED 7-clock latency.  Every stage in it propagates
+// its valid unconditionally —
+//     feature_compute : valid_s1 <= valid_in;  valid_s2a <= valid_s1; ...
+//     quantizer_ctx   : valid_out <= valid_in;
+//     cluster_lut     : valid_out <= valid_in;
+//     filter_lut      : valid_out <= valid_in;
+// The `if (valid)` guards in those modules sit only on the DATA registers;
+// they save power by holding stale data during bubbles, but the valid — and
+// therefore the data that travels with it — still advances one stage per
+// clock.  Bubbles pass straight through.
 //
-// If this chain shifted on every clock while the taps path stalled during
-// those gaps, the two would desynchronise and the MAC would combine a
-// patch with taps computed for a different patch.  Gating on valid_in
-// keeps both paths advancing in lockstep regardless of gaps.
+// So this chain must also advance one stage per CLOCK, not one stage per
+// VALID BEAT.  Gating it on valid_in makes its latency 7 valid-beats, which
+// equals 7 clocks only when valid is continuous.
 //
-// Note this is invisible in a single-patch testbench (pixels_flat is held
-// static) and nearly invisible on flat or linear-gradient images (local
-// context barely changes, so wrong taps ≈ right taps).  It only shows up
-// on real textured content.
+// line_buffer's valid_out is NOT continuous: it is low for the first 6
+// columns of every row (col_cnt < 6) and for the first 6 rows, since no
+// complete 7x7 window exists there.  With the chain gated, each 6-clock gap
+// pushed px_d 6 clocks behind the taps, and the MAC then re-used the same
+// stale patch for the last 6 outputs of every row — six identical wrong
+// pixels per row, ~0.27% of the frame.
+//
+// Verified by tb_pc_stream.v: gated -> 59/260 mismatches clustered in the
+// last 6 output columns; ungated -> 0/260, bit-exact against pc_golden.py.
 
 reg [49*8-1:0] px_d [0:6];
 always @(posedge clk) begin
-    if (valid_in) begin
-        px_d[0] <= pixels_flat;
-        px_d[1] <= px_d[0];
-        px_d[2] <= px_d[1];
-        px_d[3] <= px_d[2];
-        px_d[4] <= px_d[3];
-        px_d[5] <= px_d[4];
-        px_d[6] <= px_d[5];
-    end
+    px_d[0] <= pixels_flat;
+    px_d[1] <= px_d[0];
+    px_d[2] <= px_d[1];
+    px_d[3] <= px_d[2];
+    px_d[4] <= px_d[3];
+    px_d[5] <= px_d[4];
+    px_d[6] <= px_d[5];
 end
 
 // ── Stage 5: MAC Engine ──────────────────────────────────────────

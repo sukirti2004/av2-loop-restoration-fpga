@@ -2,7 +2,7 @@
 <Project Version="1" Minor="7" DIGEST="">
 	<TOOL_VERSION Version="2025.2"/>
 	<MODE Name="Post-Synthesis"/>
-	<SYSTEMINFO BOARD="" PART="xc7z020clg400-1" ARCH="zynq" PACKAGE="clg400" DEVICE="7z020" SPEED="-1"/>
+	<SYSTEMINFO BOARD="" PART="xc7z020clg400-1" ARCH="zynq" PACKAGE="clg400" DEVICE="7z020" SPEED="-1" LUT="53200" FF="106400" BRAM="140" DSP="220"/>
 	<PART Name="xc7z020clg400-1">
 		<SSIT IS_SSIT="0"/>
 		<NUM_OF_SLRS Value="1"/>
@@ -24,7 +24,7 @@
 	</File>
 	<File Type="PS_XMD_INIT" Name="ps7_init.tcl" src_db="pc_filter_bd_processing_system7_0_0.hwdef">
 	</File>
-	<File Type="HW_HANDOFF" Name="pc_filter_bd_axi_smc_0.hwh" src_db="pc_filter_bd_axi_smc_0.hwdef" DESIGN_HIERARCHY="pc_filter_bd_axi_smc_0" BD_TYPE="SCOPED_BD">
+	<File Type="HW_HANDOFF" Name="pc_filter_bd_axi_smc_0.hwh" src_db="pc_filter_bd_axi_smc_0.hwdef" DESIGN_HIERARCHY="pc_filter_bd_i/axi_smc/inst" BD_TYPE="SCOPED_BD">
 	</File>
 	<File Type="BIT" Name="pc_filter_bd_wrapper.bit" src_db="temp.hdf">
 	</File>
@@ -38,9 +38,9 @@
 			<File PATH="drivers/pc_axi_v1_0/src/pc_axi_selftest.c"/>
 		</DRIVER>
 	</DRIVERS>
-	<USEDRESOURCES/>
+	<USEDRESOURCES LUT="6177" FF="6218" BRAM="11" DSP="61"/>
 	<DESIGN_DATA Type="rm">
-		<DESIGN_IDS DESIGN_ID="0" PARENT_ID="0" NODE_ID="0"/>
+		<DESIGN_IDS DESIGN_ID="2927471740" PARENT_ID="0" NODE_ID="0"/>
 	</DESIGN_DATA>
 </Project>
 

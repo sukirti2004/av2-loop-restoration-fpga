@@ -40,10 +40,17 @@
                 "package": "clg400",
                 "speedGrade": "-1"
             },
+            "numSLRs": "1",
             "core": {
                 "name": "OCL_REGION_0",
                 "type": "clc_region",
-                "numComputeUnits": "60"
+                "numComputeUnits": "60",
+                "availableResources": {
+                    "bramCount": "129",
+                    "dspCount": "159",
+                    "lutCount": "47023",
+                    "registerCount": "100182"
+                }
             }
         }
     ],
@@ -51,6 +58,10 @@
         {
             "name": "pc_filter_bd_wrapper.bit",
             "type": "FULL_BIT"
+        },
+        {
+            "name": "pc_filter_bd_wrapper.nts",
+            "type": "NOC_TRAFFIC"
         }
     ],
     "vendor": "xilinx",
@@ -70,7 +81,16 @@
     "generatedChangeList": "6299465",
     "generatedIpChangeList": "6300035",
     "generatedSharedDataChangeList": "6298862",
-    "generatedTimestamp": "Wed Jul 29 23:00:22 2026",
-    "idCode": "03727093"
+    "generatedTimestamp": "Wed Aug 12 23:28:44 2026",
+    "idCode": "03727093",
+    "designIDs": {
+        "designID": "2927471740"
+    },
+    "resources": [
+        {
+            "type": "REG",
+            "count": "100182"
+        }
+    ]
 }
 
