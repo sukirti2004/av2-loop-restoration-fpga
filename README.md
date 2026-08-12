@@ -5,9 +5,8 @@ FPGA (Xilinx PYNQ-Z2) implementations of three AV2 in-loop restoration component
 - [`ns/`](ns/) — Non-Separable (NS) Wiener filter
 - [`pc/`](pc/) — Pixel Classification (PC) filter
 - [`rdo/`](rdo/) — RDO mode selection, choosing per-RU between NONE / PC / NS
-- [`ip_repo/`](ip_repo/) — custom AXI IP cores (`pc_axi_1_0`, `ns_filter_1_0`) shared by the
-  `pc/` and `ns/` block designs; referenced by their `.xpr` files via a relative
-  `../ip_repo` path
+- [`ip_repo/`](ip_repo/) — custom AXI IP cores: `pc_axi_1_0` (used by `pc/`) and `ns_filter_1_0`
+  (used by `ns/`), each referenced by its project's `.xpr` via a relative `../ip_repo` path
 
 Each subdirectory is a Vivado project (`.xpr` + `.srcs`), plus Python scripts used to generate
 test vectors, Jupyter notebooks used to drive PYNQ hardware runs, and the exported bitstream
