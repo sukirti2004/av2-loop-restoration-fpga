@@ -29,7 +29,10 @@
 //   WRITES (host -> IP):
 //     0x00..0x2C : taps[0..11]  (12 x 7-bit tap, low bits of each 32-bit word)
 //     0x30       : norm         (Q0.16, low 16 bits)
-//     0x34       : frame_width  (low 16 bits — MUST match FRAME_W parameter)
+//     0x34       : frame_width  (low 16 bits — runtime frame column count;
+//                                latched inside ns_filter_top on start_pulse
+//                                and used to size the delay one-shots and the
+//                                line-buffer wrap. Must be <= MAX_W parameter.)
 //     0x38       : frame_height (low 16 bits — runtime frame row count)
 //     0x3C       : control      (bit 0 = start-of-frame pulse; PS writes 1
 //                                before each frame to arm SOF + reset TLAST
@@ -62,7 +65,7 @@ module ns_filter #
     parameter integer C_M00_AXIS_TDATA_WIDTH  = 32,
     parameter integer C_M00_AXIS_START_COUNT  = 32,  // unused; kept for wizard XML
 
-    parameter integer FRAME_W                 = 1920,
+    parameter integer MAX_W                   = 1920,   // BRAM/counter depth cap
     parameter integer RU_SHIFT                = 8,
     parameter integer OUT_FIFO_LOG2_DEPTH     = 5     // 32-entry output FIFO
 )
@@ -361,8 +364,7 @@ module ns_filter #
     wire [7:0] s_pixel_to_filter = s_axis_handshake ? s00_axis_tdata[7:0] : 8'd0;
 
     ns_filter_top #(
-        .FRAME_W (FRAME_W),
-        .LINE_W  (FRAME_W),
+        .MAX_W   (MAX_W),
         .RU_SHIFT(RU_SHIFT)
     ) u_ns_filter_top (
         .clk        (clk),
@@ -370,6 +372,7 @@ module ns_filter #
         .start_pulse(start_pulse_r),   // clears per-frame carryover in
                                         // line_buffer/window_former/control
                                         // (not tap_reg_file — banks persist)
+        .img_width  (frame_w_r[10:0]), // latched inside ns_filter_top on start_pulse
         .s_valid    (s_valid_to_filter),
         .s_sof      (s_sof_pulse),
         .s_pixel    (s_pixel_to_filter),

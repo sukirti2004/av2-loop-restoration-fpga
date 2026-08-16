@@ -68,7 +68,26 @@ for r in range(H):
     for c in range(W):
         img[r,c] = (r + c) & 0xFF
 img ^= rng.integers(0, 32, size=(H,W), dtype=np.uint8)
-img[254:258, :] = 200   # horizontal band straddling the RU-row boundary at 256
+
+# --------------------------------------------------------------------
+# BUG-EXPOSING PATTERN around the RU-row boundary at row 256.
+#
+# The ORIGINAL vector had `img[254:258, :] = 200` — a uniform 200-pixel
+# band straddling the boundary. Because both RU tap sets have DC gain = 1
+# by construction (norm chosen to make weighted_sum -> 1.0), a uniform
+# window produces the SAME output value for either RU's taps, so the
+# RU-row tap-swap timing bug was invisible in this TB.
+#
+# Replace with an explicitly varying diagonal pattern in rows 250..261
+# (covers all pixels that ANY 7x7 window centered on rows 253..258
+# might see). This guarantees numerically different outputs for the
+# sharpener [-2]*11+[50] vs the blur [5]*12 taps, so if HW loads the
+# wrong RU's taps for any center pixel in rows 253..258, the compare
+# will report a mismatch.
+# --------------------------------------------------------------------
+rr, cc = np.mgrid[250:262, 0:W]                          # 12 rows, W cols
+img[250:262, :] = ((rr * 89 + cc * 47) & 0xFF).astype(np.uint8)
+img[250:262, :] ^= rng.integers(0, 64, size=(12, W), dtype=np.uint8)
 
 # ---------- GOLDEN: interior only (borders handled in PS Python) ----------
 # Full HxW array so raster indices align with input; borders left as 0xFF sentinel.
