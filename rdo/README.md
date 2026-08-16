@@ -10,9 +10,10 @@ matching a software golden-model reference bit-for-bit.
 
 - `rdo_filter.xpr` / `rdo_filter.srcs/` — Vivado project and RTL sources
 - `rdo_filter_bd_wrapper/` — exported bitstream package (`.bit` + `.hwh`) for deployment via PYNQ
-- `rdo_notebook.ipynb`, `rdo_notebook_test4.ipynb` — hardware validation notebooks: dispatch
-  HR/NONE/PC/NS tiles over DMA, compare the FPGA's per-RU winner selection against a software
-  MSE-argmin reference across multiple frames/QPs
+- `rdo_notebook.ipynb` — hardware validation notebook: for each of 13 test sequences,
+  trains per-RU NS taps, runs the full-frame PC and NS filters on hardware, feeds
+  (HR, PRELR, PC-HW, NS-HW) into the RDO IP, and confirms 100% per-RU agreement
+  between the FPGA's winner selection and the software MSE-argmin golden
 
 Note: the large `rdo_filter_bd_wrapper.dcp` synthesis checkpoint (~85MB, inside
 `rdo_filter.srcs/utils_1/imports/synth_1/`) is intentionally excluded — regenerate it in
