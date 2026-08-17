@@ -34,8 +34,8 @@
 // -----------------------------------------------------------------------------
 
 module ns_filter_top #(
-    parameter FRAME_W  = 1920,
-    parameter LINE_W   = 1920,      // line-buffer depth; usually = FRAME_W
+    parameter MAX_W    = 1920,      // widest frame this build will ever handle
+                                    // (BRAM depth cap + delay-counter width)
     parameter RU_SHIFT = 8
 )(
     input  wire        clk,
@@ -47,6 +47,12 @@ module ns_filter_top #(
     // Deliberately NOT routed into tap_reg_file — that would erase the
     // loaded coefficient banks.
     input  wire        start_pulse,
+
+    // Per-frame runtime frame width. Driven from AXI-Lite reg 0x34 in the
+    // wrapper; latched inside this module on start_pulse so downstream sees
+    // a stable value across the whole frame regardless of when PS writes it.
+    // Must be <= MAX_W.
+    input  wire [10:0] img_width,
 
     // Pixel input stream
     input  wire        s_valid,
@@ -67,12 +73,24 @@ module ns_filter_top #(
     input  wire        flip_bank       // 1-cycle pulse: atomically flip active/inactive banks
 );
 
+    // -----------------------------------------------------------------------
+    // Latch img_width on every start_pulse. Downstream (line_buffer/control)
+    // needs a stable operand — a mid-frame change to img_width would
+    // desync the delay counters and the wrap point.
+    // -----------------------------------------------------------------------
+    reg [10:0] img_width_r;
+    always @(posedge clk) begin
+        if (rst)               img_width_r <= 11'd0;
+        else if (start_pulse)  img_width_r <= img_width;
+    end
+
     // Line buffer -> 7-pixel column
     wire        lb_valid;
     wire [55:0] lb_col_pixels;
 
-    ns_line_buffer #(.W(LINE_W)) u_line_buffer (
+    ns_line_buffer #(.MAX_W(MAX_W)) u_line_buffer (
         .clk(clk), .rst(rst), .start_pulse(start_pulse),
+        .img_width(img_width_r),
         .valid_in(s_valid), .pixel_in(s_pixel),
         .valid_out(lb_valid), .col_pixels(lb_col_pixels)
     );
@@ -156,8 +174,9 @@ module ns_filter_top #(
     );
 
     // Control: watches raster, pulses swap on RU boundaries (with pipeline-latency delay)
-    control #(.FRAME_W(FRAME_W), .LINE_W(LINE_W), .RU_SHIFT(RU_SHIFT)) u_control (
+    control #(.MAX_W(MAX_W), .RU_SHIFT(RU_SHIFT)) u_control (
         .clk(clk), .rst(rst), .start_pulse(start_pulse),
+        .img_width(img_width_r),
         .valid_in(s_valid),
         .sof(s_sof),
         .swap(swap),
