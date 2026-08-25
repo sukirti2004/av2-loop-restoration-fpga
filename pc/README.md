@@ -1,14 +1,51 @@
 # PC Filter — FPGA Implementation
 
-Pixel Classification filter, implemented as a Vivado block design and validated end-to-end
-on a PYNQ-Z2 board.
+Pixel Classification filter for AV2 loop restoration. 4-cluster classifier + per-cluster
+LUT-driven filter, run as a custom AXI IP on the PL side of a PYNQ-Z2 (Zynq-7020). See the
+[top-level README](../README.md) for how this module fits into the wider pipeline.
 
-- `fpga_pc.xpr` / `fpga_pc.srcs/` — Vivado project and RTL sources, including `tb_pc_stream.v`
-  (streaming-level testbench for the PC filter core, under `fpga_pc.srcs/sim_1/`). The custom
-  AXI IP core referenced by the block design (`pc_axi_1_0`) lives in `../ip_repo/`.
-- `pc_filter_bd_wrapper/` — exported bitstream package (`.bit` + `.hwh`) for deployment via PYNQ
-- `filter_lut.hex`, `cluster_map.hex` — LUT / cluster map data
-- `pc_golden.py` — Python reference model of the PC filter (fixed-point, matches the RTL
-  bit-for-bit); used by `pc_notebook.ipynb` to verify hardware output against software
-- `pc_notebook.ipynb` — hardware validation notebook: runs every uploaded test sequence
-  through the FPGA and checks its output against `pc_golden.py`, pixel-exact
+## What it does
+
+For each pixel the IP computes classification features from the local neighborhood,
+quantizes them against four Q2.14 thresholds to pick a cluster index, and looks the
+filtered output up in a per-cluster LUT (`filter_lut.hex`, driven by `cluster_map.hex`).
+No per-frame training — the LUTs are baked in at synthesis time. A software golden model
+(`pc_golden.py`) reproduces the same fixed-point path and the notebook confirms hardware
+output pixel-exact against it.
+
+## AXI register map (`pc_axi_1_0`)
+
+| Offset      | Field                              | Notes                                             |
+|-------------|------------------------------------|---------------------------------------------------|
+| `0x00–0x0C` | 4 classification thresholds        | Q2.14                                             |
+| `0x1C`      | `(H << 16) \| W`                   | frame geometry                                    |
+
+Streaming is via AXI-Stream in and out (MM2S + S2MM DMA channels driven from the notebook).
+Trained thresholds live in `pc_qp_group_*.npz` files under the project; loaded by the
+notebook per QP group.
+
+## Layout
+
+| Path                                          | Contents                                                    |
+|-----------------------------------------------|-------------------------------------------------------------|
+| `fpga_pc.xpr`, `fpga_pc.srcs/`                | Vivado 2025.2 project + RTL sources                         |
+| `../ip_repo/pc_axi_1_0/`                      | Packaged AXI IP referenced by the block design              |
+| `pc_filter_bd_wrapper/`                       | Exported `.bit` + `.hwh` for PYNQ (no Vivado on board)      |
+| `pc_notebook.ipynb`                           | Hardware validation notebook                                 |
+| `pc_golden.py`                                | Fixed-point Python reference model, bit-exact with RTL      |
+| `cluster_map.hex`, `filter_lut.hex`           | 4-cluster classifier map + per-cluster filter LUT           |
+| `fpga_pc.srcs/sim_1/tb_pc_stream.v`           | Streaming testbench for the PC filter core                  |
+
+## Results
+
+Pixel-exact vs `pc_golden.py` across the training QP range (thresholds trained per
+QP group; PC is designed to shine at higher QPs — see the top-level results table for
+QP 160/170/180 PSNR gains). Below the training range PC underperforms; do not evaluate
+outside the trained QP window without retraining.
+
+## Quick start
+
+Copy `pc_filter_bd_wrapper/` (both `.bit` and `.hwh`) to the PYNQ-Z2 alongside
+`pc_notebook.ipynb`, open the notebook, run all cells. To re-synthesize the bitstream,
+open `fpga_pc.xpr` in Vivado 2025.2 and run through implementation and
+`write_bitstream`.
