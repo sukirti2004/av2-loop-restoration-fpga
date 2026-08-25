@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 340" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .box   { fill: #f1f5f9; stroke: #334155; stroke-width: 1.5; }
+      .input { fill: #e2e8f0; stroke: #475569; stroke-width: 1.5; }
+      .ns    { fill: #d1fae5; stroke: #047857; stroke-width: 1.5; }
+      .pc    { fill: #fed7aa; stroke: #c2410c; stroke-width: 1.5; }
+      .none  { fill: #e2e8f0; stroke: #475569; stroke-width: 1.5; }
+      .rdo   { fill: #dbeafe; stroke: #1e40af; stroke-width: 2;   }
+      .out   { fill: #fef3c7; stroke: #a16207; stroke-width: 1.5; }
+      .lbl   { fill: #0f172a; font-weight: 600; }
+      .sub   { fill: #475569; font-size: 12px; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 1.5; marker-end: url(#arr); }
+    </style>
+  </defs>
+
+  <rect class="input" x="20"  y="140" width="130" height="60" rx="6"/>
+  <text class="lbl"  x="85"  y="170" text-anchor="middle">Pre-LR frame</text>
+  <text class="sub"  x="85"  y="190" text-anchor="middle">1920 x 1080, Y</text>
+
+  <rect class="none" x="230" y="30"  width="150" height="70" rx="6"/>
+  <text class="lbl"  x="305" y="60"  text-anchor="middle">NONE</text>
+  <text class="sub"  x="305" y="80"  text-anchor="middle">pass-through</text>
+
+  <rect class="pc"   x="230" y="140" width="150" height="70" rx="6"/>
+  <text class="lbl"  x="305" y="170" text-anchor="middle">PC filter</text>
+  <text class="sub"  x="305" y="190" text-anchor="middle">4-cluster LUT</text>
+
+  <rect class="ns"   x="230" y="250" width="150" height="70" rx="6"/>
+  <text class="lbl"  x="305" y="280" text-anchor="middle">NS filter</text>
+  <text class="sub"  x="305" y="300" text-anchor="middle">12-tap Wiener, per-RU taps</text>
+
+  <path class="arrow" d="M150,170 L225,60"/>
+  <path class="arrow" d="M150,170 L225,170"/>
+  <path class="arrow" d="M150,170 L225,280"/>
+
+  <rect class="rdo" x="470" y="120" width="200" height="100" rx="6"/>
+  <text class="lbl"  x="570" y="152" text-anchor="middle">RDO selector</text>
+  <text class="sub"  x="570" y="172" text-anchor="middle">per RU (256 x 256):</text>
+  <text class="sub"  x="570" y="190" text-anchor="middle">argmin (MSE + &#955;&#183;R)</text>
+  <text class="sub"  x="570" y="208" text-anchor="middle">tie-break: NONE &gt; PC &gt; NS</text>
+
+  <path class="arrow" d="M380,65  L468,140"/>
+  <path class="arrow" d="M380,170 L468,170"/>
+  <path class="arrow" d="M380,285 L468,200"/>
+
+  <rect class="input" x="470" y="30" width="200" height="60" rx="6"/>
+  <text class="lbl"  x="570" y="60" text-anchor="middle">HR reference</text>
+  <text class="sub"  x="570" y="80" text-anchor="middle">for MSE computation</text>
+  <path class="arrow" d="M570,90 L570,118"/>
+
+  <rect class="out"  x="760" y="140" width="200" height="60" rx="6"/>
+  <text class="lbl"  x="860" y="170" text-anchor="middle">Restored frame</text>
+  <text class="sub"  x="860" y="190" text-anchor="middle">per-RU winner blend</text>
+  <path class="arrow" d="M670,170 L758,170"/>
+</svg>
