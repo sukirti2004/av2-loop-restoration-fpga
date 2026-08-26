@@ -27,7 +27,7 @@
 
   <rect class="pc"   x="230" y="140" width="150" height="70" rx="6"/>
   <text class="lbl"  x="305" y="170" text-anchor="middle">PC filter</text>
-  <text class="sub"  x="305" y="190" text-anchor="middle">4-cluster LUT</text>
+  <text class="sub"  x="305" y="190" text-anchor="middle">7x7 kernel, 12-bit context</text>
 
   <rect class="ns"   x="230" y="250" width="150" height="70" rx="6"/>
   <text class="lbl"  x="305" y="280" text-anchor="middle">NS filter</text>

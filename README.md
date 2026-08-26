@@ -6,7 +6,8 @@ reconstructed frame by choosing, per 256×256 restoration unit (RU), one of thre
 candidates and blending them back into the frame:
 
 - **NONE** — leave the pre-loop-restored (pre-LR) pixels alone (no filter cost)
-- **PC** — pixel-classification filter (4-cluster look-up, cheap)
+- **PC** — pixel-context filter: 4 directional features quantized into 8 levels each form a
+  12-bit context index that selects one of 256 learned 7×7 kernels (no per-frame training)
 - **NS** — non-separable Wiener filter (12 symmetric taps, per-RU trained)
 
 An **RDO** (rate-distortion optimized) selector picks the winner per RU by minimizing

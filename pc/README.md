@@ -1,15 +1,16 @@
 # PC Filter — FPGA Implementation
 
-Pixel Classification filter for AV2 loop restoration. 4-cluster classifier + per-cluster
-LUT-driven filter, run as a custom AXI IP on the PL side of a PYNQ-Z2 (Zynq-7020). See the
+Pixel Classification filter for AV2 loop restoration. 8-level-per-feature context
+classifier + per-class LUT-driven 7x7 filter, run as a custom AXI IP on the PL side of a PYNQ-Z2 (Zynq-7020). See the
 [top-level README](../README.md) for how this module fits into the wider pipeline.
 
 ## What it does
 
-For each pixel the IP computes classification features from the local neighborhood,
-quantizes them against four Q2.14 thresholds to pick a cluster index, and looks the
-filtered output up in a per-cluster LUT (`filter_lut.hex`, driven by `cluster_map.hex`).
-No per-frame training — the LUTs are baked in at synthesis time. A software golden model
+For each pixel the IP computes four directional mean-absolute-Laplacian features over
+the 7x7 neighborhood, quantizes each against seven Q2.14 thresholds into eight levels,
+and packs them into a 12-bit context index. That index selects a filter class from the
+4096-entry `cluster_map.hex`, which in turn selects one of 256 learned 7x7 kernels from
+`filter_lut.hex`. No per-frame training — both LUTs are baked in at synthesis time. A software golden model
 (`pc_golden.py`) reproduces the same fixed-point path and the notebook confirms hardware
 output pixel-exact against it.
 
@@ -17,7 +18,7 @@ output pixel-exact against it.
 
 | Offset      | Field                              | Notes                                             |
 |-------------|------------------------------------|---------------------------------------------------|
-| `0x00–0x0C` | 4 classification thresholds        | Q2.14                                             |
+| `0x00–0x18` | 7 classification thresholds        | Q2.14                                             |
 | `0x1C`      | `(H << 16) \| W`                   | frame geometry                                    |
 
 Streaming is via AXI-Stream in and out (MM2S + S2MM DMA channels driven from the notebook).
