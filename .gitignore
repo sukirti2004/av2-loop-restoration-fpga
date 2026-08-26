@@ -20,3 +20,9 @@ webtalk*.jou
 # OS junk
 Thumbs.db
 .DS_Store
+
+# Scratch NS notebook at repo root (the real one is ns/ns_notebook.ipynb)
+/ns_notebook.ipynb
+
+# Generated reports from report_all.tcl
+/reports/
