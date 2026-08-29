@@ -34,7 +34,9 @@ notebook per QP group.
 | `pc_filter_bd_wrapper/`                       | Exported `.bit` + `.hwh` for PYNQ (no Vivado on board)      |
 | `pc_notebook.ipynb`                           | Hardware validation notebook                                 |
 | `pc_golden.py`                                | Fixed-point Python reference model, bit-exact with RTL      |
-| `cluster_map.hex`, `filter_lut.hex`           | 4-cluster classifier map + per-cluster filter LUT           |
+| `cluster_map.hex`, `filter_lut.hex`           | 12-bit context -> 4096-entry cluster map + 256 learned 7x7 filter LUT |
+| `sweep_wordlength.py`                         | Fixed-point word-length sweep (data behind the paper's Fig. 4) |
+| `fig_wordlength.py`                           | Plots that sweep                                            |
 | `fpga_pc.srcs/sim_1/tb_pc_stream.v`           | Streaming testbench for the PC filter core                  |
 
 ## Results
@@ -43,6 +45,25 @@ Pixel-exact vs `pc_golden.py` across the training QP range (thresholds trained p
 QP group; PC is designed to shine at higher QPs — see the top-level results table for
 QP 160/170/180 PSNR gains). Below the training range PC underperforms; do not evaluate
 outside the trained QP window without retraining.
+
+## Word-length study
+
+`sweep_wordlength.py` re-runs the PC datapath in software with the 49 filter taps
+quantized to between six and sixteen fractional bits, scoring each against an
+infinite-precision reference in output Y-PSNR. `fig_wordlength.py` plots the result.
+
+```
+python3 sweep_wordlength.py --datasets <OUTPUT dir> --npz pc_qp_group_1.npz
+python3 fig_wordlength.py
+```
+
+The shipped Q3.13 format costs 2.3e-4 dB, roughly seventy times below the filter's
+own restoration gain, and the curve has flattened by about ten bits — the tap width
+is over-provisioned. Below nine bits the dominant error is not rounding noise but a
+broken unit-sum constraint: each kernel sums to unity so the filter preserves mean
+brightness, and rounding taps independently perturbs that sum, reaching 14% DC-gain
+error at six bits. A narrower port should renormalize after quantization, absorbing
+the residual into the centre tap.
 
 ## Quick start
 
