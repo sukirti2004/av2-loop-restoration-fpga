@@ -1,6 +1,7 @@
 # AV2 Loop Restoration — FPGA Implementation
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22132000.svg)](https://doi.org/10.5281/zenodo.22132000)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22131999.svg)](https://doi.org/10.5281/zenodo.22131999)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Hardware bring-up of the **loop-restoration** stage of the AV2 video codec on a Xilinx PYNQ-Z2
 (Zynq-7020). The stage sits inside the codec's decoding loop and improves a coarsely
