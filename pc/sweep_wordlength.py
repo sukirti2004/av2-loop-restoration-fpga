@@ -2,7 +2,7 @@
 """
 Fixed-point word-length sweep for the PC restoration filter.
 
-Produces the data behind Fig. 4 of the paper (plot with fig_wordlength.py).
+Produces the data behind the word-length figure (plot with fig_wordlength.py).
 Pure software study -- no FPGA, no PYNQ overlay. It answers, in the OUTPUT
 domain (dB of Y-PSNR against the HR source), how much output quality each
 quantization decision actually costs.
@@ -18,7 +18,9 @@ number downstream. Both paths below compare against T_int (Q2.14 integers).
 Configurations per (sequence, QP):
   pre        pre-loop-restoration input
   float      float64 taps + exact-scale classifier   <- infinite-precision bound
-  taps@B     taps at B fractional bits + exact-scale classifier
+  taps@B     taps at B fractional bits (naive rounding)
+  renorm@B   taps at B fractional bits, residual absorbed into the centre tap
+             so each kernel sums to exactly 2^B (unit-sum preserved)
   shipped    Q3.13 taps + RTL integer classifier     <- what the RTL does
   cls        float64 taps + RTL integer classifier   <- classifier error alone
 """
@@ -99,6 +101,18 @@ def filter_frame(img, cmap, taps, T_int, exact, tap_shift, block_rows=270):
     return out
 
 
+def q_naive(LUT_f, b):
+    return np.round(LUT_f * (1 << b)).astype(np.int64)
+
+
+def q_renorm(LUT_f, b):
+    """Naive rounding, then absorb the residual into the origin-symmetric
+    centre tap (index 24 of the 7x7) so the unit-sum constraint survives."""
+    t = q_naive(LUT_f, b)
+    t[:, 24] += (1 << b) - t.sum(axis=1)
+    return t
+
+
 def dc_gain(taps_q, b):
     """Max |row sum - 1| over the 256 filters after quantizing to b frac bits."""
     return float(np.abs(taps_q.sum(axis=1) / float(1 << b) - 1.0).max())
@@ -118,7 +132,7 @@ def main():
     cmap  = d['cluster_map'].astype(np.int32)
     T_int = np.round(d['T'].astype(np.float64) * THR_SCALE).astype(np.int32)
 
-    dc = {b: dc_gain(np.round(LUT_f * (1 << b)).astype(np.int64), b) for b in bits}
+    dc = {b: dc_gain(q_naive(LUT_f, b), b) for b in bits}
     print('DC-gain error (max |row sum - 1|) after tap quantization:')
     for b in bits:
         print(f'   {b:2d} bits : {dc[b]*100:7.3f} %')
@@ -141,18 +155,21 @@ def main():
             p_pre   = psnr(pre, hr)
             p_float = psnr(filter_frame(pre, cmap, LUT_f, T_int, True,  None), hr)
             p_cls   = psnr(filter_frame(pre, cmap, LUT_f, T_int, False, None), hr)
-            p_taps  = {b: psnr(filter_frame(pre, cmap,
-                                            np.round(LUT_f * (1 << b)).astype(np.int64),
+            p_taps  = {b: psnr(filter_frame(pre, cmap, q_naive(LUT_f, b),
+                                            T_int, True, b), hr) for b in bits}
+            p_renrm = {b: psnr(filter_frame(pre, cmap, q_renorm(LUT_f, b),
                                             T_int, True, b), hr) for b in bits}
             p_ship  = psnr(filter_frame(pre, cmap,
                                         np.round(LUT_f * 8192).astype(np.int64),
                                         T_int, False, 13), hr)
 
             rows.append(dict(seq=seq, qp=qp, pre=p_pre, float=p_float,
-                             cls=p_cls, shipped=p_ship, taps=p_taps))
+                             cls=p_cls, shipped=p_ship, taps=p_taps,
+                             renorm=p_renrm))
             print(f'{seq:30s} qp{qp}  pre={p_pre:6.3f}  float={p_float:6.3f}  '
                   f'cls={p_cls:6.3f}  shipped={p_ship:6.3f}  '
-                  f'tap13={p_taps[13]:6.3f}  [{time.time()-t0:5.0f}s]', flush=True)
+                  f'tap13={p_taps[13]:6.3f}  rn9={p_renrm[9]:6.3f}  '
+                  f'[{time.time()-t0:5.0f}s]', flush=True)
 
     np.savez(args.out, rows=np.array(rows, dtype=object),
              bits=np.array(bits), dc=np.array([dc[b] for b in bits]))
